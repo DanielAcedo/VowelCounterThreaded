@@ -16,7 +16,8 @@ public class VowelFinderThread extends Thread{
 	@Override
 	public void run() {
 		for(int i = 0; i<text.length(); i++){
-			if(text.charAt(i) == vowel || text.charAt(i) == Character.toUpperCase(vowel)){
+			
+			if(text.charAt(i) == vowel || text.charAt(i) == Character.toUpperCase(vowel)){ //We do not make difference between uppercase or lowercase
 				this.vowelCounter.incrementVowel(code);
 			}
 		}

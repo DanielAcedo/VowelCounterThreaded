@@ -5,9 +5,11 @@ public class VowelCounter{
 		a, e, i, o, u
 	};
 	
-	public int vowelCount;
-	public Integer aCount, eCount, iCount, oCount, uCount;
-	public String textToSearch;
+	private static final Object mutexCounter = new Object(); //Monitor for vowelCount
+	
+	private int vowelCount;
+	private Integer aCount, eCount, iCount, oCount, uCount;
+	private String textToSearch;
 	
 	public VowelCounter(String text){
 		this.vowelCount = 0;
@@ -20,6 +22,7 @@ public class VowelCounter{
 	}
 	
 	public void startCounting(){
+		//Create a thread for every letter we want to keep track of and start them
 		VowelFinderThread finderThread_A = new VowelFinderThread('a', this.textToSearch, Codes.a, this);
 		VowelFinderThread finderThread_E = new VowelFinderThread('e', this.textToSearch, Codes.e, this);
 		VowelFinderThread finderThread_I = new VowelFinderThread('i', this.textToSearch, Codes.i, this);
@@ -32,6 +35,7 @@ public class VowelCounter{
 		finderThread_O.start();
 		finderThread_U.start();
 		
+		//Wait for them to finish
 		try{
 			finderThread_A.join();
 			finderThread_E.join();
@@ -40,7 +44,7 @@ public class VowelCounter{
 			finderThread_U.join();
 			
 		}catch(InterruptedException e){
-			
+			System.err.println("Error concerning vowel counter thread interruption");
 		}
 		
 		printValues();
@@ -48,41 +52,51 @@ public class VowelCounter{
 	}
 	
 	public void printValues(){
-		System.out.println("Texto:");
+		System.out.println("Text:");
 		System.out.println(textToSearch);
 		System.out.println("------");
-		System.out.println("Valores");
+		System.out.println("Values");
 		System.out.println("========");
 		System.out.println("a: "+aCount);
 		System.out.println("e: "+eCount);
 		System.out.println("i: "+iCount);
 		System.out.println("o: "+oCount);
 		System.out.println("u: "+uCount);
-		System.out.println("Total: "+vowelCount);
+		System.out.println("\nTotal vowels: "+vowelCount);
 		
 	}
 	
-	public synchronized void incrementVowel(Codes code){
+	public void incrementVowel(Codes code){
 		switch (code){
 			case a:
-				aCount++;
-				vowelCount++;
+				synchronized (mutexCounter) {
+					aCount++;
+					vowelCount++;
+				}
 				break;
 			case e:
-				eCount++;
-				vowelCount++;
+				synchronized (mutexCounter) {
+					eCount++;
+					vowelCount++;
+				}
 				break;
 			case i:
-				iCount++;
-				vowelCount++;
+				synchronized (mutexCounter) {
+					iCount++;
+					vowelCount++;
+				}
 				break;
 			case o:
-				oCount++;
-				vowelCount++;
+				synchronized (mutexCounter) {
+					oCount++;
+					vowelCount++;
+				}
 				break;
 			case u:
-				uCount++;
-				vowelCount++;
+				synchronized (mutexCounter) {
+					uCount++;
+					vowelCount++;
+				}
 				break;
 			default:
 				break;
